@@ -34,4 +34,10 @@ public class Equipment {
         this.name = name;
         this.status = status;
     }
+
+    public void update(String code, String name, EquipmentStatus status) {
+        this.code = code;
+        this.name = name;
+        this.status = status;
+    }
 }

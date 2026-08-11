@@ -2,6 +2,7 @@ package com.homin.cmms.equipment;
 
 import com.homin.cmms.equipment.dto.EquipmentCreateRequest;
 import com.homin.cmms.equipment.dto.EquipmentResponse;
+import com.homin.cmms.equipment.dto.EquipmentUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,5 +54,20 @@ public class EquipmentController {
         Equipment equipment = equipmentService.findById(id);
 
         return EquipmentResponse.from(equipment);
+    }
+
+    @PutMapping("/{id}")
+    public EquipmentResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody EquipmentUpdateRequest request
+            ) {
+        Equipment equipment = equipmentService.update(id, request.getCode(), request.getName(), request.getStatus());
+
+        return EquipmentResponse.from(equipment);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        equipmentService.delete(id);
     }
 }
