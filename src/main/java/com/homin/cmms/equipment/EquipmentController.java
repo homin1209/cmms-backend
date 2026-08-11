@@ -3,10 +3,9 @@ package com.homin.cmms.equipment;
 import com.homin.cmms.equipment.dto.EquipmentCreateRequest;
 import com.homin.cmms.equipment.dto.EquipmentResponse;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/equipments")
@@ -36,6 +35,22 @@ public class EquipmentController {
                     request.getStatus()
             );
         }
+
+        return EquipmentResponse.from(equipment);
+    }
+
+    @GetMapping
+    public List<EquipmentResponse> findAll() {
+        List<Equipment> equipments = equipmentService.findAll();
+
+        return equipments.stream()
+                .map(EquipmentResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/{id}")
+    public EquipmentResponse findById(@PathVariable Long id) {
+        Equipment equipment = equipmentService.findById(id);
 
         return EquipmentResponse.from(equipment);
     }

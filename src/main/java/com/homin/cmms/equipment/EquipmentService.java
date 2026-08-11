@@ -2,6 +2,8 @@ package com.homin.cmms.equipment;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EquipmentService {
 
@@ -23,5 +25,15 @@ public class EquipmentService {
         Equipment equipment = new Equipment(code, name, status);
 
         return equipmentRepository.save(equipment);
+    }
+
+    public List<Equipment> findAll() {
+        return equipmentRepository.findAll();
+    }
+
+    public Equipment findById(Long id) {
+        return equipmentRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("존재하지 않는 설비입니다."));
     }
 }
