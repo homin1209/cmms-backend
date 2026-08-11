@@ -1,5 +1,7 @@
 package com.homin.cmms.equipment;
 
+import com.homin.cmms.common.exception.DuplicateEquipmentCodeException;
+import com.homin.cmms.common.exception.EquipmentNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +23,7 @@ public class EquipmentService {
 
     public Equipment create(String code, String name, EquipmentStatus status) {
         if (equipmentRepository.existsByCode(code)) {
-            throw new IllegalArgumentException("이미 존재하는 설비 코드입니다.");
+            throw new DuplicateEquipmentCodeException("이미 존재하는 설비 코드입니다.");
         }
 
         Equipment equipment = new Equipment(code, name, status);
@@ -36,7 +38,7 @@ public class EquipmentService {
     public Equipment findById(Long id) {
         return equipmentRepository.findById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("존재하지 않는 설비입니다."));
+                        new EquipmentNotFoundException("존재하지 않는 설비입니다."));
     }
 
     @Transactional

@@ -8,13 +8,13 @@ import lombok.Getter;
 @Getter
 public class EquipmentUpdateRequest {
 
-    @NotBlank
+    @NotBlank(message = "설비 코드는 필수입니다.")
     private String code;
 
-    @NotBlank
+    @NotBlank(message = "설비 이름은 필수입니다.")
     private String name;
 
-    @NotNull
+    @NotNull(message = "설비 상태는 필수입니다.")
     private EquipmentStatus status;
 
     public EquipmentUpdateRequest(String code, String name, EquipmentStatus status) {

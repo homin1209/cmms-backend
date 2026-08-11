@@ -4,6 +4,8 @@ import com.homin.cmms.equipment.dto.EquipmentCreateRequest;
 import com.homin.cmms.equipment.dto.EquipmentResponse;
 import com.homin.cmms.equipment.dto.EquipmentUpdateRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +21,7 @@ public class EquipmentController {
     }
 
     @PostMapping
-    public EquipmentResponse create(
+    public ResponseEntity<EquipmentResponse> create(
             @Valid @RequestBody EquipmentCreateRequest request
     ) {
         Equipment equipment;
@@ -37,7 +39,9 @@ public class EquipmentController {
             );
         }
 
-        return EquipmentResponse.from(equipment);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(EquipmentResponse.from(equipment));
     }
 
     @GetMapping
@@ -67,7 +71,9 @@ public class EquipmentController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         equipmentService.delete(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
