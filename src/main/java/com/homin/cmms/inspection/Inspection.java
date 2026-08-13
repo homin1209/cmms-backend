@@ -34,4 +34,10 @@ public class Inspection {
         this.result = result;
         this.content = content;
     }
+
+    public void update(LocalDateTime inspectedAt, InspectionResult result, String content) {
+        this.inspectedAt = inspectedAt;
+        this.result = result;
+        this.content = content;
+    }
 }

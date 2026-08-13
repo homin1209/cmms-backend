@@ -1,7 +1,9 @@
 package com.homin.cmms.inspection;
 
+import com.homin.cmms.common.exception.InspectionNotFoundException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.EquipmentService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,5 +39,26 @@ public class InspectionService {
         equipmentService.findById(equipmentId);
 
         return inspectionRepository.findByEquipmentId(equipmentId);
+    }
+
+    public Inspection findById(Long equipmentId, Long id) {
+
+        return inspectionRepository.findByIdAndEquipmentId(equipmentId, id)
+                .orElseThrow(() -> new InspectionNotFoundException("존재하지 않는 점검 기록입니다."));
+    }
+
+    @Transactional
+    public Inspection update(Long equipmentId, Long id, LocalDateTime inspectedAt, InspectionResult result, String content) {
+        Inspection inspection = findById(equipmentId, id);
+
+        inspection.update(inspectedAt, result, content);
+
+        return inspection;
+    }
+
+    public void delete(Long equipmentId, Long id) {
+        Inspection inspection = findById(equipmentId, id);
+
+        inspectionRepository.delete(inspection);
     }
 }

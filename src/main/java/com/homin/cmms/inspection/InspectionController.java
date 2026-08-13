@@ -3,8 +3,10 @@ package com.homin.cmms.inspection;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.dto.EquipmentCreateRequest;
 import com.homin.cmms.equipment.dto.EquipmentResponse;
+import com.homin.cmms.equipment.dto.EquipmentUpdateRequest;
 import com.homin.cmms.inspection.dto.InspectionCreateRequest;
 import com.homin.cmms.inspection.dto.InspectionResponse;
+import com.homin.cmms.inspection.dto.InspectionUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +53,36 @@ public class InspectionController {
         return inspections.stream()
                 .map(InspectionResponse::from)
                 .toList();
+    }
+
+    @GetMapping("/{id}")
+    public InspectionResponse findById(
+            @PathVariable Long equipmentId,
+            @PathVariable Long id
+    ) {
+        Inspection inspection = inspectionService.findById(equipmentId, id);
+
+        return InspectionResponse.from(inspection);
+    }
+
+    @PutMapping("/{id}")
+    public InspectionResponse update(
+            @PathVariable Long equipmentId,
+            @PathVariable Long id,
+            @Valid @RequestBody InspectionUpdateRequest request
+    ) {
+        Inspection inspection = inspectionService.update(equipmentId, id, request.getInspectedAt(), request.getResult(), request.getContent());
+
+        return InspectionResponse.from(inspection);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long equipmentId,
+            @PathVariable Long id
+    ) {
+        inspectionService.delete(equipmentId, id);
+
+        return ResponseEntity.noContent().build();
     }
 }

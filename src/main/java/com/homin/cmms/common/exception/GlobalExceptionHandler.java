@@ -43,4 +43,14 @@ public class GlobalExceptionHandler {
                         message
         ));
     }
+
+    @ExceptionHandler(InspectionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleInspectionNotFoundException(InspectionNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        exception.getMessage()
+                ));
+    }
 }
