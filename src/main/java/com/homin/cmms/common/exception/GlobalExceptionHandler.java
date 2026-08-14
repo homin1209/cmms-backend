@@ -53,4 +53,14 @@ public class GlobalExceptionHandler {
                         exception.getMessage()
                 ));
     }
+
+    @ExceptionHandler(FailureNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFailureNotFoundException(FailureNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        exception.getMessage()
+                ));
+    }
 }

@@ -43,7 +43,7 @@ public class InspectionService {
 
     public Inspection findById(Long equipmentId, Long id) {
 
-        return inspectionRepository.findByIdAndEquipmentId(equipmentId, id)
+        return inspectionRepository.findByEquipmentIdAndId(equipmentId, id)
                 .orElseThrow(() -> new InspectionNotFoundException("존재하지 않는 점검 기록입니다."));
     }
 

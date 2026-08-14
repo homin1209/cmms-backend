@@ -9,5 +9,5 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
 
     List<Inspection> findByEquipmentId(Long equipmentId);
 
-    Optional<Inspection> findByIdAndEquipmentId(Long equipmentId, Long id);
+    Optional<Inspection> findByEquipmentIdAndId(Long equipmentId, Long id);
 }
