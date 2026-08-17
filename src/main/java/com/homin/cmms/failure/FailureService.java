@@ -3,6 +3,9 @@ package com.homin.cmms.failure;
 import com.homin.cmms.common.exception.FailureNotFoundException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.EquipmentService;
+import com.homin.cmms.inspection.Inspection;
+import com.homin.cmms.inspection.InspectionResult;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,5 +47,20 @@ public class FailureService {
 
         return failureRepository.findByEquipmentIdAndId(equipmentId, id)
                 .orElseThrow(() -> new FailureNotFoundException("존재하지 않는 고장 이력입니다."));
+    }
+
+    @Transactional
+    public Failure update(Long equipmentId, Long id, LocalDateTime occurredAt, String description, FailureStatus status) {
+        Failure failure = findById(equipmentId, id);
+
+        failure.update(occurredAt, description, status);
+
+        return failure;
+    }
+
+    public void delete(Long equipmentId, Long id) {
+        Failure failure = findById(equipmentId, id);
+
+        failureRepository.delete(failure);
     }
 }

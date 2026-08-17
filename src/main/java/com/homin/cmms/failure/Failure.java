@@ -34,4 +34,14 @@ public class Failure {
         this.description = description;
         this.status = status;
     }
+
+    public void update(
+            LocalDateTime occurredAt,
+            String description,
+            FailureStatus status
+    ) {
+        this.occurredAt = occurredAt;
+        this.description = description;
+        this.status = status;
+    }
 }

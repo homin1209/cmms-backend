@@ -2,6 +2,9 @@ package com.homin.cmms.failure;
 
 import com.homin.cmms.failure.dto.FailureCreateRequest;
 import com.homin.cmms.failure.dto.FailureResponse;
+import com.homin.cmms.failure.dto.FailureUpdateRequest;
+import com.homin.cmms.inspection.Inspection;
+import com.homin.cmms.inspection.dto.InspectionResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,5 +59,26 @@ public class FailureController {
         Failure failure = failureService.findById(equipmentId, id);
 
         return FailureResponse.from(failure);
+    }
+
+    @PutMapping("/{id}")
+    public FailureResponse update(
+            @PathVariable Long equipmentId,
+            @PathVariable Long id,
+            @Valid @RequestBody FailureUpdateRequest request
+    ) {
+        Failure failure = failureService.update(equipmentId, id, request.getOccurredAt(), request.getDescription(), request.getStatus());
+
+        return FailureResponse.from(failure);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long equipmentId,
+            @PathVariable Long id
+    ) {
+        failureService.delete(equipmentId, id);
+
+        return ResponseEntity.noContent().build();
     }
 }
