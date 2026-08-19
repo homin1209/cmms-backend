@@ -8,11 +8,11 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class MaintenanceCreateRequest {
+public class MaintenanceUpdateRequest {
 
     private Long failureId;
 
-    @NotNull(message = "정비 일시는 필수입니다.")
+    @NotNull(message = "정비 일자는 필수입니다.")
     private LocalDateTime performedAt;
 
     @NotBlank(message = "정비 내용은 필수입니다.")
@@ -21,7 +21,7 @@ public class MaintenanceCreateRequest {
     @NotNull(message = "정비 상태는 필수입니다.")
     private MaintenanceStatus status;
 
-    public MaintenanceCreateRequest(Long failureId, LocalDateTime performedAt, String description, MaintenanceStatus status) {
+    public MaintenanceUpdateRequest(Long failureId, LocalDateTime performedAt, String description, MaintenanceStatus status) {
         this.failureId = failureId;
         this.performedAt = performedAt;
         this.description = description;

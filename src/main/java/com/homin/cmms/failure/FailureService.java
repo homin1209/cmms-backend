@@ -3,8 +3,6 @@ package com.homin.cmms.failure;
 import com.homin.cmms.common.exception.FailureNotFoundException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.EquipmentService;
-import com.homin.cmms.inspection.Inspection;
-import com.homin.cmms.inspection.InspectionResult;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

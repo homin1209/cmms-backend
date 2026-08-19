@@ -1,15 +1,13 @@
 package com.homin.cmms.maintenance;
 
-import com.homin.cmms.failure.Failure;
-import com.homin.cmms.failure.dto.FailureResponse;
 import com.homin.cmms.maintenance.dto.MaintenanceCreateRequest;
 import com.homin.cmms.maintenance.dto.MaintenanceResponse;
+import com.homin.cmms.maintenance.dto.MaintenanceUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -60,5 +58,26 @@ public class MaintenanceController {
         Maintenance maintenance = maintenanceService.findById(equipmentId, id);
 
         return MaintenanceResponse.from(maintenance);
+    }
+
+    @PutMapping("/{id}")
+    public MaintenanceResponse update(
+            @PathVariable Long equipmentId,
+            @PathVariable Long id,
+            @Valid @RequestBody MaintenanceUpdateRequest request
+    ) {
+        Maintenance maintenance = maintenanceService.update(equipmentId, id, request.getFailureId(), request.getPerformedAt(), request.getDescription(), request.getStatus());
+
+        return MaintenanceResponse.from(maintenance);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long equipmentId,
+            @PathVariable Long id
+    ) {
+        maintenanceService.delete(equipmentId, id);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,19 +1,13 @@
 package com.homin.cmms.inspection;
 
-import com.homin.cmms.equipment.Equipment;
-import com.homin.cmms.equipment.dto.EquipmentCreateRequest;
-import com.homin.cmms.equipment.dto.EquipmentResponse;
-import com.homin.cmms.equipment.dto.EquipmentUpdateRequest;
 import com.homin.cmms.inspection.dto.InspectionCreateRequest;
 import com.homin.cmms.inspection.dto.InspectionResponse;
 import com.homin.cmms.inspection.dto.InspectionUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController

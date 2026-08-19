@@ -41,4 +41,11 @@ public class Maintenance {
         this.description = description;
         this.status = status;
     }
+
+    public void update(Failure failure, LocalDateTime performedAt, String description, MaintenanceStatus status) {
+        this.failure = failure;
+        this.performedAt = performedAt;
+        this.description = description;
+        this.status = status;
+    }
 }

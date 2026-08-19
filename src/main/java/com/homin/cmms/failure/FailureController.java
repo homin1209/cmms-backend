@@ -3,8 +3,6 @@ package com.homin.cmms.failure;
 import com.homin.cmms.failure.dto.FailureCreateRequest;
 import com.homin.cmms.failure.dto.FailureResponse;
 import com.homin.cmms.failure.dto.FailureUpdateRequest;
-import com.homin.cmms.inspection.Inspection;
-import com.homin.cmms.inspection.dto.InspectionResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

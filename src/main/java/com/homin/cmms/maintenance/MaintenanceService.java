@@ -1,11 +1,11 @@
 package com.homin.cmms.maintenance;
 
-import com.homin.cmms.common.exception.FailureNotFoundException;
 import com.homin.cmms.common.exception.MaintenanceNotFoundException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.EquipmentService;
 import com.homin.cmms.failure.Failure;
 import com.homin.cmms.failure.FailureService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -48,5 +48,28 @@ public class MaintenanceService {
 
         return maintenanceRepository.findByEquipmentIdAndId(equipmentId, id)
                 .orElseThrow(() -> new MaintenanceNotFoundException("존재하지 않는 정비 이력입니다."));
+    }
+
+    @Transactional
+    public Maintenance update(Long equipmentId, Long id, Long failureId, LocalDateTime performedAt, String description, MaintenanceStatus status) {
+
+        Maintenance maintenance = findById(equipmentId, id);
+
+        Failure failure = null;
+
+        if (failureId != null) {
+            failure = failureService.findById(equipmentId, failureId);
+        }
+
+        maintenance.update(failure, performedAt, description, status);
+
+        return maintenance;
+    }
+
+    public void delete(Long equipmentId, Long id) {
+
+        Maintenance maintenance = findById(equipmentId, id);
+
+        maintenanceRepository.delete(maintenance);
     }
 }
