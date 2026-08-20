@@ -44,4 +44,8 @@ public class Failure {
         this.description = description;
         this.status = status;
     }
+
+    public void changeStatus(FailureStatus status) {
+        this.status = status;
+    }
 }

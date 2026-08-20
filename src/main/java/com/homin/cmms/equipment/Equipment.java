@@ -40,4 +40,8 @@ public class Equipment {
         this.name = name;
         this.status = status;
     }
+
+    public void changeStatus(EquipmentStatus status) {
+        this.status = status;
+    }
 }

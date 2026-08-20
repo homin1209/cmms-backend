@@ -3,6 +3,7 @@ package com.homin.cmms.failure;
 import com.homin.cmms.common.exception.FailureNotFoundException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.EquipmentService;
+import com.homin.cmms.equipment.EquipmentStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class FailureService {
         this.equipmentService = equipmentService;
     }
 
+    @Transactional
     public Failure create(Long equipmentId, LocalDateTime occurredAt, String description, FailureStatus status) {
 
         Equipment equipment = equipmentService.findById(equipmentId);
@@ -30,6 +32,8 @@ public class FailureService {
                 description,
                 status
         );
+
+        equipment.changeStatus(EquipmentStatus.FAILURE);
 
         return failureRepository.save(failure);
     }

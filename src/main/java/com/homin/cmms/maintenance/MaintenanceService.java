@@ -3,8 +3,10 @@ package com.homin.cmms.maintenance;
 import com.homin.cmms.common.exception.MaintenanceNotFoundException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.EquipmentService;
+import com.homin.cmms.equipment.EquipmentStatus;
 import com.homin.cmms.failure.Failure;
 import com.homin.cmms.failure.FailureService;
+import com.homin.cmms.failure.FailureStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class MaintenanceService {
         this.failureService = failureService;
     }
 
+    @Transactional
     public Maintenance create(Long equipmentId, Long failureId, LocalDateTime performedAt, String description, MaintenanceStatus status) {
         Equipment equipment = equipmentService.findById(equipmentId);
         Failure failure = null;
@@ -33,6 +36,22 @@ public class MaintenanceService {
         }
 
         Maintenance maintenance = new Maintenance(equipment, failure, performedAt, description, status);
+
+        if (status == MaintenanceStatus.IN_PROGRESS) {
+            equipment.changeStatus(EquipmentStatus.MAINTENANCE);
+        }
+
+        if (status == MaintenanceStatus.COMPLETED) {
+            equipment.changeStatus(EquipmentStatus.RUNNING);
+        }
+
+        if (failure != null && status == MaintenanceStatus.IN_PROGRESS) {
+            failure.changeStatus(FailureStatus.IN_PROGRESS);
+        }
+
+        if (failure != null && status == MaintenanceStatus.COMPLETED) {
+            failure.changeStatus(FailureStatus.RESOLVED);
+        }
 
         return maintenanceRepository.save(maintenance);
     }
@@ -53,6 +72,8 @@ public class MaintenanceService {
     @Transactional
     public Maintenance update(Long equipmentId, Long id, Long failureId, LocalDateTime performedAt, String description, MaintenanceStatus status) {
 
+        Equipment equipment = equipmentService.findById(equipmentId);
+
         Maintenance maintenance = findById(equipmentId, id);
 
         Failure failure = null;
@@ -62,6 +83,22 @@ public class MaintenanceService {
         }
 
         maintenance.update(failure, performedAt, description, status);
+
+        if (status == MaintenanceStatus.IN_PROGRESS) {
+            equipment.changeStatus(EquipmentStatus.MAINTENANCE);
+        }
+
+        if (status == MaintenanceStatus.COMPLETED) {
+            equipment.changeStatus(EquipmentStatus.RUNNING);
+        }
+
+        if (failure != null && status == MaintenanceStatus.IN_PROGRESS) {
+            failure.changeStatus(FailureStatus.IN_PROGRESS);
+        }
+
+        if (failure != null && status == MaintenanceStatus.COMPLETED) {
+            failure.changeStatus(FailureStatus.RESOLVED);
+        }
 
         return maintenance;
     }
