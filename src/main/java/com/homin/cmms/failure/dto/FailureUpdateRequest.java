@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 public class FailureUpdateRequest {
 
+    private Long inspectionId;
+
     @NotNull(message = "고장 발생 일자는 필수입니다.")
     private LocalDateTime occurredAt;
 
@@ -20,10 +22,12 @@ public class FailureUpdateRequest {
     private FailureStatus status;
 
     public FailureUpdateRequest(
+            Long inspectionId,
             LocalDateTime occurredAt,
             String description,
             FailureStatus status
     ) {
+        this.inspectionId = inspectionId;
         this.occurredAt = occurredAt;
         this.description = description;
         this.status = status;

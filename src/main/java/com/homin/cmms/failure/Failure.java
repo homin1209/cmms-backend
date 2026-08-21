@@ -1,6 +1,7 @@
 package com.homin.cmms.failure;
 
 import com.homin.cmms.equipment.Equipment;
+import com.homin.cmms.inspection.Inspection;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,18 +29,25 @@ public class Failure {
     @Enumerated(EnumType.STRING)
     private FailureStatus status;
 
-    protected Failure(Equipment equipment, LocalDateTime occurredAt, String description, FailureStatus status) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inspection_id")
+    private Inspection inspection;
+
+    protected Failure(Equipment equipment, Inspection inspection, LocalDateTime occurredAt, String description, FailureStatus status) {
         this.equipment = equipment;
+        this.inspection = inspection;
         this.occurredAt = occurredAt;
         this.description = description;
         this.status = status;
     }
 
     public void update(
+            Inspection inspection,
             LocalDateTime occurredAt,
             String description,
             FailureStatus status
     ) {
+        this.inspection = inspection;
         this.occurredAt = occurredAt;
         this.description = description;
         this.status = status;

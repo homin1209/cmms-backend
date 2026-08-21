@@ -27,6 +27,7 @@ public class FailureController {
     ) {
         Failure failure = failureService.create(
                 equipmentId,
+                request.getInspectionId(),
                 request.getOccurredAt(),
                 request.getDescription(),
                 request.getStatus()
@@ -65,7 +66,7 @@ public class FailureController {
             @PathVariable Long id,
             @Valid @RequestBody FailureUpdateRequest request
     ) {
-        Failure failure = failureService.update(equipmentId, id, request.getOccurredAt(), request.getDescription(), request.getStatus());
+        Failure failure = failureService.update(equipmentId, id, request.getInspectionId(), request.getOccurredAt(), request.getDescription(), request.getStatus());
 
         return FailureResponse.from(failure);
     }
