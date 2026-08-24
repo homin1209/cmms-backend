@@ -1,5 +1,6 @@
 package com.homin.cmms.maintenance;
 
+import com.homin.cmms.common.exception.InvalidMaintenanceStatusTransitionException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.failure.Failure;
 import jakarta.persistence.*;
@@ -46,6 +47,25 @@ public class Maintenance {
         this.failure = failure;
         this.performedAt = performedAt;
         this.description = description;
-        this.status = status;
+        changeStatus(status);
+    }
+
+    public void changeStatus(MaintenanceStatus newStatus) {
+
+        if(status == newStatus) {
+            return;
+        }
+
+        if(status == MaintenanceStatus.PLANNED && newStatus == MaintenanceStatus.IN_PROGRESS){
+            this.status = newStatus;
+            return;
+        }
+
+        if(status == MaintenanceStatus.IN_PROGRESS && newStatus == MaintenanceStatus.COMPLETED){
+            this.status = newStatus;
+            return;
+        }
+
+        throw new InvalidMaintenanceStatusTransitionException("정비 상태를 " + this.status + "에서 " + newStatus + "로 변경할 수 없습니다.");
     }
 }

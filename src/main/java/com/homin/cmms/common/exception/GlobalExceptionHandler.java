@@ -73,4 +73,16 @@ public class GlobalExceptionHandler {
                         exception.getMessage()
                 ));
     }
+
+    @ExceptionHandler(InvalidMaintenanceStatusTransitionException.class)
+    public ResponseEntity<?> handleInvalidMaintenanceStatusTransition(InvalidMaintenanceStatusTransitionException exception) {
+        String message = exception.getMessage();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        message
+                ));
+    }
 }
