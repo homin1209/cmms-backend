@@ -74,8 +74,8 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(InvalidMaintenanceStatusTransitionException.class)
-    public ResponseEntity<?> handleInvalidMaintenanceStatusTransition(InvalidMaintenanceStatusTransitionException exception) {
+    @ExceptionHandler(InvalidFailureStatusTransitionException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFailureStatusTransition(InvalidFailureStatusTransitionException exception) {
         String message = exception.getMessage();
 
         return ResponseEntity

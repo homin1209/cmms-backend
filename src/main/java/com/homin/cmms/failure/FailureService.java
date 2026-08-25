@@ -6,6 +6,8 @@ import com.homin.cmms.equipment.EquipmentService;
 import com.homin.cmms.equipment.EquipmentStatus;
 import com.homin.cmms.inspection.Inspection;
 import com.homin.cmms.inspection.InspectionService;
+import com.homin.cmms.maintenance.Maintenance;
+import com.homin.cmms.maintenance.MaintenanceStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

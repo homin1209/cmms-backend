@@ -1,5 +1,6 @@
 package com.homin.cmms.failure;
 
+import com.homin.cmms.common.exception.InvalidFailureStatusTransitionException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.inspection.Inspection;
 import jakarta.persistence.*;
@@ -50,10 +51,25 @@ public class Failure {
         this.inspection = inspection;
         this.occurredAt = occurredAt;
         this.description = description;
-        this.status = status;
+        changeStatus(status);
     }
 
-    public void changeStatus(FailureStatus status) {
-        this.status = status;
+    public void changeStatus(FailureStatus newStatus) {
+
+        if(status == newStatus) {
+            return;
+        }
+
+        if(status == FailureStatus.REPORTED && newStatus == FailureStatus.IN_PROGRESS){
+            this.status = newStatus;
+            return;
+        }
+
+        if(status == FailureStatus.IN_PROGRESS && newStatus == FailureStatus.RESOLVED){
+            this.status = newStatus;
+            return;
+        }
+
+        throw new InvalidFailureStatusTransitionException("고장 상태를 " + this.status + "에서 " + newStatus + "로 변경할 수 없습니다.");
     }
 }
