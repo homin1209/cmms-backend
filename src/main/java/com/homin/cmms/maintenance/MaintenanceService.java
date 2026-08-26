@@ -37,21 +37,7 @@ public class MaintenanceService {
 
         Maintenance maintenance = new Maintenance(equipment, failure, performedAt, description, status);
 
-        if (status == MaintenanceStatus.IN_PROGRESS) {
-            equipment.changeStatus(EquipmentStatus.MAINTENANCE);
-        }
-
-        if (status == MaintenanceStatus.COMPLETED) {
-            equipment.changeStatus(EquipmentStatus.RUNNING);
-        }
-
-        if (failure != null && status == MaintenanceStatus.IN_PROGRESS) {
-            failure.changeStatus(FailureStatus.IN_PROGRESS);
-        }
-
-        if (failure != null && status == MaintenanceStatus.COMPLETED) {
-            failure.changeStatus(FailureStatus.RESOLVED);
-        }
+        synchronizeStatus(equipment, failure, status);
 
         return maintenanceRepository.save(maintenance);
     }
@@ -84,6 +70,19 @@ public class MaintenanceService {
 
         maintenance.update(failure, performedAt, description, status);
 
+        synchronizeStatus(equipment, failure, status);
+
+        return maintenance;
+    }
+
+    public void delete(Long equipmentId, Long id) {
+
+        Maintenance maintenance = findById(equipmentId, id);
+
+        maintenanceRepository.delete(maintenance);
+    }
+
+    private void synchronizeStatus(Equipment equipment, Failure failure, MaintenanceStatus status) {
         if (status == MaintenanceStatus.IN_PROGRESS) {
             equipment.changeStatus(EquipmentStatus.MAINTENANCE);
         }
@@ -99,14 +98,5 @@ public class MaintenanceService {
         if (failure != null && status == MaintenanceStatus.COMPLETED) {
             failure.changeStatus(FailureStatus.RESOLVED);
         }
-
-        return maintenance;
-    }
-
-    public void delete(Long equipmentId, Long id) {
-
-        Maintenance maintenance = findById(equipmentId, id);
-
-        maintenanceRepository.delete(maintenance);
     }
 }
