@@ -14,12 +14,8 @@ public class EquipmentUpdateRequest {
     @NotBlank(message = "설비 이름은 필수입니다.")
     private String name;
 
-    @NotNull(message = "설비 상태는 필수입니다.")
-    private EquipmentStatus status;
-
-    public EquipmentUpdateRequest(String code, String name, EquipmentStatus status) {
+    public EquipmentUpdateRequest(String code, String name) {
         this.code = code;
         this.name = name;
-        this.status = status;
     }
 }

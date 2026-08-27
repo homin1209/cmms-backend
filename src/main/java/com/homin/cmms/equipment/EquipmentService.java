@@ -41,10 +41,10 @@ public class EquipmentService {
     }
 
     @Transactional
-    public Equipment update(Long id, String code, String name, EquipmentStatus status) {
+    public Equipment update(Long id, String code, String name) {
         Equipment equipment = findById(id);
 
-        equipment.update(code, name, status);
+        equipment.update(code, name);
 
         return equipment;
     }

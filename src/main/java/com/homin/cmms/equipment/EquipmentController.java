@@ -65,7 +65,7 @@ public class EquipmentController {
             @PathVariable Long id,
             @Valid @RequestBody EquipmentUpdateRequest request
             ) {
-        Equipment equipment = equipmentService.update(id, request.getCode(), request.getName(), request.getStatus());
+        Equipment equipment = equipmentService.update(id, request.getCode(), request.getName());
 
         return EquipmentResponse.from(equipment);
     }

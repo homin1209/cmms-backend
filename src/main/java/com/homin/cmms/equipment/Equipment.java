@@ -35,10 +35,9 @@ public class Equipment {
         this.status = status;
     }
 
-    public void update(String code, String name, EquipmentStatus status) {
+    public void update(String code, String name) {
         this.code = code;
         this.name = name;
-        this.status = status;
     }
 
     public void changeStatus(EquipmentStatus status) {
