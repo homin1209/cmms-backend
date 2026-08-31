@@ -95,4 +95,14 @@ public class GlobalExceptionHandler {
                         exception.getMessage()
                 ));
     }
+
+    @ExceptionHandler(DuplicateUserEmailException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateUserEmailException(DuplicateUserEmailException exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(
+                        HttpStatus.CONFLICT.value(),
+                        exception.getMessage()
+                ));
+    }
 }
