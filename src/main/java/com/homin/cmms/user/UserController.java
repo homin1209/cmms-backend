@@ -1,6 +1,7 @@
 package com.homin.cmms.user;
 
 import com.homin.cmms.user.dto.UserCreateRequest;
+import com.homin.cmms.user.dto.UserLoginRequest;
 import com.homin.cmms.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,5 +32,16 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> login(
+            @Valid @RequestBody UserLoginRequest request
+    ) {
+        User user = userService.login(request);
+
+        UserResponse userResponse = UserResponse.from(user);
+
+        return ResponseEntity.ok(userResponse);
     }
 }
