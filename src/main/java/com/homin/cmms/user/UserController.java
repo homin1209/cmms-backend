@@ -1,7 +1,9 @@
 package com.homin.cmms.user;
 
+import com.homin.cmms.jwt.JwtProvider;
 import com.homin.cmms.user.dto.UserCreateRequest;
 import com.homin.cmms.user.dto.UserLoginRequest;
+import com.homin.cmms.user.dto.UserLoginResponse;
 import com.homin.cmms.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,8 +19,11 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final JwtProvider jwtProvider;
+
+    public UserController(UserService userService, JwtProvider jwtProvider) {
         this.userService = userService;
+        this.jwtProvider = jwtProvider;
     }
 
     @PostMapping
@@ -35,13 +40,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(
+    public ResponseEntity<UserLoginResponse> login(
             @Valid @RequestBody UserLoginRequest request
     ) {
         User user = userService.login(request);
 
-        UserResponse userResponse = UserResponse.from(user);
+        String token = jwtProvider.generateToken(user);
 
-        return ResponseEntity.ok(userResponse);
+        UserLoginResponse userLoginResponse = new UserLoginResponse(token);
+
+        return ResponseEntity.ok(userLoginResponse);
     }
 }
