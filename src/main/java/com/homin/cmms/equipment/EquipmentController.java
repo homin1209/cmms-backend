@@ -45,8 +45,11 @@ public class EquipmentController {
     }
 
     @GetMapping
-    public List<EquipmentResponse> findAll() {
-        List<Equipment> equipments = equipmentService.findAll();
+    public List<EquipmentResponse> findAll(
+            @RequestParam(required = false) EquipmentStatus status,
+            @RequestParam(required = false) String name
+    ) {
+        List<Equipment> equipments = equipmentService.findAll(status, name);
 
         return equipments.stream()
                 .map(EquipmentResponse::from)

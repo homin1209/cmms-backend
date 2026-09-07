@@ -30,7 +30,19 @@ public class EquipmentService {
         return equipmentRepository.save(equipment);
     }
 
-    public List<Equipment> findAll() {
+    public List<Equipment> findAll(EquipmentStatus status, String name) {
+        if (status != null && name != null) {
+            return equipmentRepository.findByStatusAndNameContainingIgnoreCase(status, name);
+        }
+
+        if (status != null) {
+            return equipmentRepository.findByStatus(status);
+        }
+
+        if (name != null) {
+            return equipmentRepository.findByNameContainingIgnoreCase(name);
+        }
+
         return equipmentRepository.findAll();
     }
 
