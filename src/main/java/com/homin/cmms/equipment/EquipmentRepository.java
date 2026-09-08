@@ -1,19 +1,20 @@
 package com.homin.cmms.equipment;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
 
     boolean existsByCode(String code);
 
-    List<Equipment> findByStatus(EquipmentStatus status);
+    Page<Equipment> findByStatus(EquipmentStatus status, Pageable pageable);
 
-    List<Equipment> findByNameContainingIgnoreCase(String name);
+    Page<Equipment> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-    List<Equipment> findByStatusAndNameContainingIgnoreCase(
+    Page<Equipment> findByStatusAndNameContainingIgnoreCase(
             EquipmentStatus status,
-            String name
+            String name,
+            Pageable pageable
     );
 }

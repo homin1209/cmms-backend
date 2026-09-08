@@ -4,6 +4,8 @@ import com.homin.cmms.equipment.dto.EquipmentCreateRequest;
 import com.homin.cmms.equipment.dto.EquipmentResponse;
 import com.homin.cmms.equipment.dto.EquipmentUpdateRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,15 +47,14 @@ public class EquipmentController {
     }
 
     @GetMapping
-    public List<EquipmentResponse> findAll(
+    public Page<EquipmentResponse> findAll(
             @RequestParam(required = false) EquipmentStatus status,
-            @RequestParam(required = false) String name
+            @RequestParam(required = false) String name,
+            Pageable pageable
     ) {
-        List<Equipment> equipments = equipmentService.findAll(status, name);
+        Page<Equipment> equipments = equipmentService.findAll(status, name, pageable);
 
-        return equipments.stream()
-                .map(EquipmentResponse::from)
-                .toList();
+        return equipments.map(EquipmentResponse::from);
     }
 
     @GetMapping("/{id}")

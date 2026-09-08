@@ -2,6 +2,8 @@ package com.homin.cmms.equipment;
 
 import com.homin.cmms.common.exception.DuplicateEquipmentCodeException;
 import com.homin.cmms.common.exception.EquipmentNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,20 +32,20 @@ public class EquipmentService {
         return equipmentRepository.save(equipment);
     }
 
-    public List<Equipment> findAll(EquipmentStatus status, String name) {
+    public Page<Equipment> findAll(EquipmentStatus status, String name, Pageable pageable) {
         if (status != null && name != null) {
-            return equipmentRepository.findByStatusAndNameContainingIgnoreCase(status, name);
+            return equipmentRepository.findByStatusAndNameContainingIgnoreCase(status, name, pageable);
         }
 
         if (status != null) {
-            return equipmentRepository.findByStatus(status);
+            return equipmentRepository.findByStatus(status, pageable);
         }
 
         if (name != null) {
-            return equipmentRepository.findByNameContainingIgnoreCase(name);
+            return equipmentRepository.findByNameContainingIgnoreCase(name, pageable);
         }
 
-        return equipmentRepository.findAll();
+        return equipmentRepository.findAll(pageable);
     }
 
     public Equipment findById(Long id) {
