@@ -4,11 +4,11 @@ import com.homin.cmms.failure.dto.FailureCreateRequest;
 import com.homin.cmms.failure.dto.FailureResponse;
 import com.homin.cmms.failure.dto.FailureUpdateRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/equipments/{equipmentId}/failures")
@@ -39,15 +39,15 @@ public class FailureController {
     }
 
     @GetMapping
-    public List<FailureResponse> findByEquipmentId(
-            @PathVariable Long equipmentId
+    public Page<FailureResponse> findByEquipmentId(
+            @PathVariable Long equipmentId,
+            @RequestParam(required = false) FailureStatus status,
+            Pageable pageable
     ) {
-        List<Failure> failures =
-                failureService.findByEquipmentId(equipmentId);
+        Page<Failure> failures =
+                failureService.findByEquipmentId(equipmentId, status, pageable);
 
-        return failures.stream()
-                .map(FailureResponse::from)
-                .toList();
+        return failures.map(FailureResponse::from);
     }
 
     @GetMapping("/{id}")
