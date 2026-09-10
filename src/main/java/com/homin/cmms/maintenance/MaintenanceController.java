@@ -4,11 +4,12 @@ import com.homin.cmms.maintenance.dto.MaintenanceCreateRequest;
 import com.homin.cmms.maintenance.dto.MaintenanceResponse;
 import com.homin.cmms.maintenance.dto.MaintenanceUpdateRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/equipments/{equipmentId}/maintenances")
@@ -39,15 +40,14 @@ public class MaintenanceController {
     }
 
     @GetMapping
-    public List<MaintenanceResponse> findByEquipmentId(
-            @PathVariable Long equipmentId
+    public Page<MaintenanceResponse> findByEquipmentId(
+            @PathVariable Long equipmentId,
+            @RequestParam(required = false) MaintenanceStatus status,
+            Pageable pageable
     ) {
-        List<Maintenance> maintenances =
-                maintenanceService.findByEquipmentId(equipmentId);
+        Page<Maintenance> maintenances = maintenanceService.findByEquipmentId(equipmentId, status, pageable);
 
-        return maintenances.stream()
-                .map(MaintenanceResponse::from)
-                .toList();
+        return maintenances.map(MaintenanceResponse::from);
     }
 
     @GetMapping("/{id}")

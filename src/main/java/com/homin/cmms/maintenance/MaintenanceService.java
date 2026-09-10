@@ -8,10 +8,11 @@ import com.homin.cmms.failure.Failure;
 import com.homin.cmms.failure.FailureService;
 import com.homin.cmms.failure.FailureStatus;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class MaintenanceService {
@@ -42,11 +43,16 @@ public class MaintenanceService {
         return maintenanceRepository.save(maintenance);
     }
 
-    public List<Maintenance> findByEquipmentId(Long equipmentId) {
+    public Page<Maintenance> findByEquipmentId(Long equipmentId, MaintenanceStatus status, Pageable pageable) {
 
         equipmentService.findById(equipmentId);
 
-        return maintenanceRepository.findByEquipmentId(equipmentId);
+        if (status != null) {
+            return maintenanceRepository.findByEquipmentIdAndStatus(equipmentId, status, pageable);
+        }
+
+
+        return maintenanceRepository.findByEquipmentId(equipmentId, pageable);
     }
 
     public Maintenance findById(Long equipmentId, Long id) {
