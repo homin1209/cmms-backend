@@ -4,10 +4,11 @@ import com.homin.cmms.common.exception.InspectionNotFoundException;
 import com.homin.cmms.equipment.Equipment;
 import com.homin.cmms.equipment.EquipmentService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class InspectionService {
@@ -34,11 +35,15 @@ public class InspectionService {
         return inspectionRepository.save(inspection);
     }
 
-    public List<Inspection> findByEquipmentId(Long equipmentId) {
+    public Page<Inspection> findByEquipmentId(Long equipmentId, InspectionResult result, Pageable pageable) {
 
         equipmentService.findById(equipmentId);
 
-        return inspectionRepository.findByEquipmentId(equipmentId);
+        if (result != null) {
+            return inspectionRepository.findByEquipmentIdAndResult(equipmentId, result, pageable);
+        }
+
+        return inspectionRepository.findByEquipmentId(equipmentId, pageable);
     }
 
     public Inspection findById(Long equipmentId, Long id) {

@@ -4,11 +4,11 @@ import com.homin.cmms.inspection.dto.InspectionCreateRequest;
 import com.homin.cmms.inspection.dto.InspectionResponse;
 import com.homin.cmms.inspection.dto.InspectionUpdateRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/equipments/{equipmentId}/inspections")
@@ -38,15 +38,14 @@ public class InspectionController {
     }
 
     @GetMapping
-    public List<InspectionResponse> findByEquipmentId(
-            @PathVariable Long equipmentId
+    public Page<InspectionResponse> findByEquipmentId(
+            @PathVariable Long equipmentId,
+            @RequestParam(required = false) InspectionResult result,
+            Pageable pageable
     ) {
-        List<Inspection> inspections =
-                inspectionService.findByEquipmentId(equipmentId);
+        Page<Inspection> inspections = inspectionService.findByEquipmentId(equipmentId, result, pageable);
 
-        return inspections.stream()
-                .map(InspectionResponse::from)
-                .toList();
+        return inspections.map(InspectionResponse::from);
     }
 
     @GetMapping("/{id}")
