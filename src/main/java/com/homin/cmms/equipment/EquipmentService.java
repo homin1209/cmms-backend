@@ -31,7 +31,9 @@ public class EquipmentService {
     }
 
     public Page<Equipment> findAll(EquipmentStatus status, String name, Pageable pageable) {
-        if (status != null && name != null) {
+        boolean hasName = name != null && !name.isBlank();
+
+        if (status != null && hasName) {
             return equipmentRepository.findByStatusAndNameContainingIgnoreCase(status, name, pageable);
         }
 
@@ -39,7 +41,7 @@ public class EquipmentService {
             return equipmentRepository.findByStatus(status, pageable);
         }
 
-        if (name != null) {
+        if (hasName) {
             return equipmentRepository.findByNameContainingIgnoreCase(name, pageable);
         }
 

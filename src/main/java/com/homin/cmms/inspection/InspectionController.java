@@ -6,6 +6,8 @@ import com.homin.cmms.inspection.dto.InspectionUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +43,7 @@ public class InspectionController {
     public Page<InspectionResponse> findByEquipmentId(
             @PathVariable Long equipmentId,
             @RequestParam(required = false) InspectionResult result,
-            Pageable pageable
+            @PageableDefault(sort = "inspectedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<Inspection> inspections = inspectionService.findByEquipmentId(equipmentId, result, pageable);
 

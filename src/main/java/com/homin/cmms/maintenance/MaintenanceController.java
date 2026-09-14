@@ -6,6 +6,8 @@ import com.homin.cmms.maintenance.dto.MaintenanceUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +45,7 @@ public class MaintenanceController {
     public Page<MaintenanceResponse> findByEquipmentId(
             @PathVariable Long equipmentId,
             @RequestParam(required = false) MaintenanceStatus status,
-            Pageable pageable
+            @PageableDefault(sort = "performedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<Maintenance> maintenances = maintenanceService.findByEquipmentId(equipmentId, status, pageable);
 
