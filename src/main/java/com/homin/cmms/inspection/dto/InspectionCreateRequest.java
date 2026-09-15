@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class InspectionCreateRequest {
 
-    @NotNull(message = "점검 일자는 필수입니다.")
+    @NotNull(message = "점검 일시는 필수입니다.")
     private LocalDateTime inspectedAt;
 
     @NotNull(message = "점검 결과는 필수입니다.")

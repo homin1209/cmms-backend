@@ -12,7 +12,7 @@ public class FailureCreateRequest {
 
     private Long inspectionId;
 
-    @NotNull(message = "고장 발생 일자는 필수입니다.")
+    @NotNull(message = "고장 발생 일시는 필수입니다.")
     private LocalDateTime occurredAt;
 
     @NotBlank(message = "고장 내용은 필수입니다.")

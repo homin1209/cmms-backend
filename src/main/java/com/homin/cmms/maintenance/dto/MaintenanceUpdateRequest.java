@@ -12,7 +12,7 @@ public class MaintenanceUpdateRequest {
 
     private Long failureId;
 
-    @NotNull(message = "정비 일자는 필수입니다.")
+    @NotNull(message = "정비 일시는 필수입니다.")
     private LocalDateTime performedAt;
 
     @NotBlank(message = "정비 내용은 필수입니다.")
