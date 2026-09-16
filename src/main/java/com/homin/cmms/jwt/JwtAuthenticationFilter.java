@@ -19,10 +19,12 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-
     private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider, UserRepository userRepository) {
+    public JwtAuthenticationFilter(
+            JwtProvider jwtProvider,
+            UserRepository userRepository
+    ) {
         this.jwtProvider = jwtProvider;
         this.userRepository = userRepository;
     }
@@ -33,9 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        String authorizationHeader =
+                request.getHeader("Authorization");
+
+        if (authorizationHeader != null
+                && authorizationHeader.startsWith("Bearer ")) {
+
             String token = authorizationHeader.substring(7);
 
             if (jwtProvider.validateToken(token)) {
@@ -46,7 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (user != null) {
                     SimpleGrantedAuthority authority =
-                            new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
+                            new SimpleGrantedAuthority(
+                                    "ROLE_" + user.getRole().name()
+                            );
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
@@ -58,20 +66,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);
                 }
-
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                user.getEmail(),
-                                null,
-                                List.of(authority)
-                        );
-
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

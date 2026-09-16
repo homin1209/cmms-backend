@@ -43,7 +43,8 @@ public class SecurityConfig {
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users", "/users/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users", "/users/login")
+                        .permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/equipments/**")
                         .hasAnyRole("USER", "ADMIN")
