@@ -68,7 +68,7 @@ public class MaintenanceService {
 
         Maintenance maintenance = findById(equipmentId, id);
 
-        Failure failure = null;
+        Failure failure = maintenance.getFailure();
 
         if (failureId != null) {
             failure = failureService.findById(equipmentId, failureId);
