@@ -17,4 +17,6 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
             String name,
             Pageable pageable
     );
+
+    long countByStatus(EquipmentStatus status);
 }
