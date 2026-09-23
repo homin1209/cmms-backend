@@ -13,4 +13,6 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
     Page<Inspection> findByEquipmentIdAndResult(Long equipmentId, InspectionResult result, Pageable pageable);
 
     Optional<Inspection> findByEquipmentIdAndId(Long equipmentId, Long id);
+
+    long countByResult(InspectionResult result);
 }

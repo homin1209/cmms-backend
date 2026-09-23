@@ -13,4 +13,6 @@ public interface FailureRepository extends JpaRepository<Failure, Long> {
     Page<Failure> findByEquipmentIdAndStatus(Long equipmentId, FailureStatus status, Pageable pageable);
 
     Optional<Failure> findByEquipmentIdAndId(Long equipmentId, Long id);
+
+    long countByStatus(FailureStatus status);
 }
