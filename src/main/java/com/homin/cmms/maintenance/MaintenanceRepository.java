@@ -13,4 +13,6 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> 
     Page<Maintenance> findByEquipmentIdAndStatus(Long equipmentId, MaintenanceStatus status, Pageable pageable);
 
     Optional<Maintenance> findByEquipmentIdAndId(Long equipmentId, Long id);
+
+    long countByStatus(MaintenanceStatus status);
 }

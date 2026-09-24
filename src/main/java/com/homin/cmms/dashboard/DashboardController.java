@@ -1,8 +1,6 @@
 package com.homin.cmms.dashboard;
 
-import com.homin.cmms.dashboard.dto.EquipmentStatisticsResponse;
-import com.homin.cmms.dashboard.dto.FailureStatisticsResponse;
-import com.homin.cmms.dashboard.dto.InspectionStatisticsResponse;
+import com.homin.cmms.dashboard.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,5 +36,21 @@ public class DashboardController {
 
         return ResponseEntity.ok(response);
 
+    }
+
+    @GetMapping("/maintenances")
+    public ResponseEntity<MaintenanceStatisticsResponse> getMaintenanceStatistics() {
+
+        MaintenanceStatisticsResponse response = dashboardService.getMaintenanceStatistics();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<DashboardResponse> getDashboard() {
+
+        DashboardResponse response = dashboardService.getDashboard();
+
+        return ResponseEntity.ok(response);
     }
 }
