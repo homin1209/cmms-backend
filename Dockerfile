@@ -1,0 +1,12 @@
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /app
+
+COPY . .
+
+RUN chmod +x gradlew
+RUN ./gradlew bootJar --no-daemon -x test
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "build/libs/cmms-0.0.1-SNAPSHOT.jar"]
