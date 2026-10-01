@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/cmms
+    username: postgres
+    password: ${DB_PASSWORD}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000
