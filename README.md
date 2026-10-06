@@ -146,3 +146,172 @@ REPORTED → IN_PROGRESS → RESOLVED
 ```
 
 허용되지 않은 상태 전이 요청은 `400 Bad Request`로 처리하여 잘못된 업무 상태 변경을 방지했습니다.
+
+## 5. Docker 실행 방법
+
+Docker Compose를 이용해 Spring Boot 애플리케이션과 PostgreSQL을 함께 실행할 수 있습니다.
+
+### 5.1 실행 환경
+
+프로젝트 실행을 위해 다음 환경이 필요합니다.
+
+- Java 21
+- Docker
+- Docker Compose
+- Git
+
+Docker를 이용해 애플리케이션과 PostgreSQL을 실행하므로 별도의 PostgreSQL 설치 없이 프로젝트를 실행할 수 있습니다.
+
+### 5.2 프로젝트 다운로드
+
+GitHub Repository를 Clone한 후 프로젝트 디렉터리로 이동합니다.
+
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
+
+`<repository-url>`에는 실제 GitHub Repository 주소를 입력합니다.
+
+### 5.3 환경변수 설정
+
+프로젝트 루트 디렉터리에 `.env` 파일을 생성합니다.
+
+```text
+DB_PASSWORD=your_database_password
+JWT_SECRET=your_jwt_secret
+```
+
+- `DB_PASSWORD`: PostgreSQL에서 사용할 비밀번호
+- `JWT_SECRET`: JWT 생성 및 검증에 사용할 Secret Key
+
+보안을 위해 `.env` 파일에는 실제 비밀번호와 Secret Key가 포함되므로 Git Repository에 업로드하지 않습니다.
+
+`.gitignore`에 다음 설정이 포함되어 있는지 확인합니다.
+
+```text
+.env
+```
+
+### 5.4 Docker Compose 실행
+
+프로젝트 루트 디렉터리에서 다음 명령어를 실행합니다.
+
+```bash
+docker compose up -d --build
+```
+
+이 명령어를 실행하면 다음 컨테이너가 생성되고 실행됩니다.
+
+```text
+cmms-app
+cmms-db
+```
+
+- `cmms-app`: Spring Boot 애플리케이션
+- `cmms-db`: PostgreSQL 데이터베이스
+
+Spring Boot 애플리케이션은 Docker 환경에서 `docker` profile을 사용합니다.
+
+데이터베이스 연결은 Docker Compose의 서비스 이름인 `db`를 이용합니다.
+
+```text
+jdbc:postgresql://db:5432/cmms
+```
+
+### 5.5 컨테이너 실행 확인
+
+다음 명령어를 이용해 실행 중인 컨테이너를 확인합니다.
+
+```bash
+docker ps
+```
+
+`cmms-app`과 `cmms-db`가 정상적으로 실행되고 있는지 확인합니다.
+
+애플리케이션 로그가 필요한 경우 다음 명령어를 사용할 수 있습니다.
+
+```bash
+docker compose logs app
+```
+
+실시간으로 로그를 확인하려면 다음과 같이 실행합니다.
+
+```bash
+docker compose logs -f app
+```
+
+### 5.6 API 실행 확인
+
+애플리케이션이 정상적으로 실행되면 Postman 등의 API 클라이언트를 이용해 API를 테스트할 수 있습니다.
+
+JWT 인증이 필요한 API는 먼저 회원가입 및 로그인을 진행합니다.
+
+```text
+회원가입
+    ↓
+로그인
+    ↓
+JWT 발급
+    ↓
+Authorization: Bearer {token}
+    ↓
+CMMS API 요청
+```
+
+로그인으로 발급받은 JWT를 다음 HTTP Header에 추가합니다.
+
+```text
+Authorization: Bearer {token}
+```
+
+이후 권한에 따라 설비, 점검, 고장, 정비 및 대시보드 API를 사용할 수 있습니다.
+
+### 5.7 Docker Compose 종료
+
+실행 중인 컨테이너를 종료하려면 다음 명령어를 사용합니다.
+
+```bash
+docker compose down
+```
+
+컨테이너를 다시 실행하려면 다음 명령어를 사용합니다.
+
+```bash
+docker compose up -d
+```
+
+코드 또는 Docker 이미지 구성이 변경되어 이미지를 다시 빌드해야 하는 경우 다음 명령어를 사용합니다.
+
+```bash
+docker compose up -d --build
+```
+
+## 6. 환경별 설정
+
+프로젝트는 실행 환경에 따라 Spring Profile을 분리했습니다.
+
+```text
+application.yaml
+application-local.yaml
+application-docker.yaml
+```
+
+- `application.yaml`: 공통 설정
+- `application-local.yaml`: 로컬 개발 환경 설정
+- `application-docker.yaml`: Docker 실행 환경 설정
+
+Docker 환경에서는 PostgreSQL 컨테이너와 연결하기 위해 다음과 같은 데이터베이스 주소를 사용합니다.
+
+```text
+jdbc:postgresql://db:5432/cmms
+```
+
+민감한 값은 설정 파일에 직접 작성하지 않고 환경변수로 전달합니다.
+
+```text
+DB_PASSWORD
+JWT_SECRET
+```
+
+이를 통해 로컬 환경과 Docker 환경의 설정을 분리하고, 비밀번호와 JWT Secret 같은 민감 정보를 소스 코드와 분리해 관리했습니다.
