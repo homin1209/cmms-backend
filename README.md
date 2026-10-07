@@ -315,3 +315,191 @@ JWT_SECRET
 ```
 
 이를 통해 로컬 환경과 Docker 환경의 설정을 분리하고, 비밀번호와 JWT Secret 같은 민감 정보를 소스 코드와 분리해 관리했습니다.
+
+## 7. API 구성
+
+CMMS API는 설비를 중심으로 점검, 고장, 정비 이력을 관리하도록 구성했습니다.
+
+### User
+
+| Method | Endpoint | 설명 |
+| --- | --- | --- |
+| POST | `/users` | 회원가입 |
+| POST | `/users/login` | 로그인 및 JWT 발급 |
+
+### Equipment
+
+| Method | Endpoint | 설명 |
+| --- | --- | --- |
+| POST | `/equipments` | 설비 등록 |
+| GET | `/equipments` | 설비 목록 조회 |
+| GET | `/equipments/{id}` | 설비 상세 조회 |
+| PUT | `/equipments/{id}` | 설비 수정 |
+| DELETE | `/equipments/{id}` | 설비 삭제 |
+
+설비 목록 조회에서는 상태, 이름 검색과 페이지네이션 및 정렬을 지원합니다.
+
+### Inspection
+
+| Method | Endpoint | 설명 |
+| --- | --- | --- |
+| POST | `/equipments/{equipmentId}/inspections` | 점검 등록 |
+| GET | `/equipments/{equipmentId}/inspections` | 설비별 점검 목록 조회 |
+
+점검 결과를 기준으로 필터링할 수 있으며 점검 일시를 기준으로 정렬합니다.
+
+### Failure
+
+| Method | Endpoint | 설명 |
+| --- | --- | --- |
+| POST | `/equipments/{equipmentId}/failures` | 고장 등록 |
+| GET | `/equipments/{equipmentId}/failures` | 설비별 고장 목록 조회 |
+| PUT | `/equipments/{equipmentId}/failures/{id}` | 고장 상태 수정 |
+
+고장 상태를 기준으로 필터링할 수 있으며 고장 발생 일시를 기준으로 정렬합니다.
+
+### Maintenance
+
+| Method | Endpoint | 설명 |
+| --- | --- | --- |
+| POST | `/equipments/{equipmentId}/maintenances` | 정비 등록 |
+| GET | `/equipments/{equipmentId}/maintenances` | 설비별 정비 목록 조회 |
+| PUT | `/equipments/{equipmentId}/maintenances/{id}` | 정비 상태 수정 |
+
+정비 상태를 기준으로 필터링할 수 있으며 정비 상태 변경에 따라 설비와 연결된 고장 상태가 함께 변경됩니다.
+
+### Dashboard
+
+| Method | Endpoint | 설명 |
+| --- | --- | --- |
+| GET | `/dashboard` | 전체 CMMS 현황 통합 조회 |
+| GET | `/dashboard/equipments` | 설비 상태 요약 |
+| GET | `/dashboard/inspections` | 점검 결과 요약 |
+| GET | `/dashboard/failures` | 고장 상태 요약 |
+| GET | `/dashboard/maintenances` | 정비 상태 요약 |
+
+> 실제 Endpoint가 위 표와 다른 경우 현재 Controller의 Mapping을 기준으로 수정합니다.
+
+## 8. 인증 및 권한
+
+Spring Security와 JWT를 이용해 Stateless 인증 방식을 구현했습니다.
+
+사용자가 로그인하면 JWT를 발급하고, 이후 인증이 필요한 요청에서는 HTTP Header에 JWT를 전달합니다.
+
+```text
+Authorization: Bearer {token}
+```
+
+인증 과정은 다음과 같습니다.
+
+```text
+로그인 요청
+    ↓
+사용자 정보 확인
+    ↓
+JWT 발급
+    ↓
+Authorization Header에 JWT 전달
+    ↓
+JwtAuthenticationFilter
+    ↓
+JWT 검증 및 사용자 조회
+    ↓
+SecurityContext 인증 정보 등록
+    ↓
+API 접근 권한 확인
+```
+
+사용자 권한은 `USER`와 `ADMIN`으로 구분했습니다.
+
+- `USER`
+  - 설비 및 대시보드 조회 가능
+- `ADMIN`
+  - 조회 기능 사용 가능
+  - 설비 등록, 수정, 삭제 가능
+  - 관리 기능 접근 가능
+
+인증 정보가 없거나 유효하지 않은 경우 `401 Unauthorized`, 인증은 되었지만 필요한 권한이 없는 경우 `403 Forbidden`으로 처리합니다.
+
+## 9. 프로젝트 구조
+
+프로젝트는 도메인별로 패키지를 분리하고 각 도메인 내부에서 Controller, Service, Repository, Entity, DTO의 역할을 구분했습니다.
+
+```text
+src/main/java
+└── ...
+    ├── user
+    ├── equipment
+    ├── inspection
+    ├── failure
+    ├── maintenance
+    ├── dashboard
+    └── common
+        ├── exception
+        └── security
+```
+
+각 계층의 역할은 다음과 같습니다.
+
+- `Controller`: HTTP 요청 및 응답 처리
+- `Service`: 비즈니스 로직 및 상태 변경 처리
+- `Repository`: 데이터베이스 접근
+- `Entity`: 도메인 데이터 및 관계 표현
+- `DTO`: API 요청 및 응답 데이터 분리
+- `Security`: JWT 인증 및 Spring Security 설정
+- `Exception`: 전역 예외 처리 및 공통 오류 응답
+
+## 10. 핵심 구현 내용
+
+### 도메인 상태 연계
+
+점검, 고장, 정비를 각각 독립적인 CRUD 기능으로 처리하지 않고 실제 설비 관리 업무 흐름에 맞게 상태를 연계했습니다.
+
+고장이 등록되면 설비를 `FAILURE` 상태로 변경하고, 정비가 시작되면 설비를 `MAINTENANCE` 상태로 변경합니다.
+
+고장과 연결된 정비가 완료되면 고장은 `RESOLVED`, 설비는 다시 `RUNNING` 상태로 변경됩니다.
+
+이를 통해 설비의 현재 상태와 고장·정비 진행 상황이 서로 일치하도록 구성했습니다.
+
+### 상태 전이 검증
+
+고장과 정비 상태가 임의의 순서로 변경되지 않도록 허용된 상태 전이 규칙을 적용했습니다.
+
+```text
+Failure
+REPORTED → IN_PROGRESS → RESOLVED
+
+Maintenance
+PLANNED → IN_PROGRESS → COMPLETED
+```
+
+허용되지 않은 상태 변경 요청은 `400 Bad Request`로 처리합니다.
+
+### JWT 인증 및 권한 분리
+
+Spring Security와 JWT를 이용해 세션을 사용하지 않는 Stateless 인증 구조를 구현했습니다.
+
+로그인 후 발급받은 JWT를 요청마다 검증하고 사용자 역할에 따라 API 접근 권한을 구분했습니다.
+
+인증 실패와 권한 부족을 각각 `401`, `403`으로 분리해 클라이언트가 실패 원인을 명확하게 확인할 수 있도록 했습니다.
+
+### 일관된 API 예외 처리
+
+전역 예외 처리를 적용해 API에서 발생하는 오류 응답 형식을 통일했습니다.
+
+```json
+{
+  "status": 400,
+  "message": "오류 메시지"
+}
+```
+
+요청값 검증, 존재하지 않는 리소스, 중복 데이터, 잘못된 상태 전이 등의 예외를 HTTP 상태 코드에 맞게 처리했습니다.
+
+### Docker 실행 환경 구성
+
+Spring Boot 애플리케이션과 PostgreSQL을 각각 컨테이너로 구성하고 Docker Compose를 통해 함께 실행하도록 구성했습니다.
+
+로컬 환경과 Docker 환경의 Spring Profile을 분리했으며 DB 비밀번호와 JWT Secret 등의 민감 정보는 환경변수로 관리했습니다.
+
+이를 통해 개발 환경에 직접 PostgreSQL을 구성하지 않아도 Docker를 이용해 동일한 애플리케이션 실행 환경을 구성할 수 있도록 했습니다.
