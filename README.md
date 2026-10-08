@@ -503,3 +503,122 @@ Spring Boot 애플리케이션과 PostgreSQL을 각각 컨테이너로 구성하
 로컬 환경과 Docker 환경의 Spring Profile을 분리했으며 DB 비밀번호와 JWT Secret 등의 민감 정보는 환경변수로 관리했습니다.
 
 이를 통해 개발 환경에 직접 PostgreSQL을 구성하지 않아도 Docker를 이용해 동일한 애플리케이션 실행 환경을 구성할 수 있도록 했습니다.
+
+## 11. 트러블슈팅
+
+### 11.1 JWT 인증 및 권한 처리 문제
+
+**문제**
+
+Spring Security와 JWT 인증 기능 구현 과정에서 로그인 이후 API 요청 시 `401 Unauthorized`가 발생했습니다.
+
+또한 일반 사용자와 관리자 권한을 구분하는 과정에서 인증 실패와 접근 권한 부족에 대한 응답을 명확하게 처리할 필요가 있었습니다.
+
+**원인**
+
+- 초기 로그인 요청에서 잘못된 API 경로를 사용하여 인증 오류 발생
+- Spring Security의 URL별 접근 권한 설정 확인 필요
+- 인증되지 않은 요청과 권한이 부족한 요청에 대한 예외 처리 구분 필요
+
+**해결**
+
+- 로그인 API 경로를 `/users/login`으로 수정
+- `JwtAuthenticationFilter`에서 JWT 검증 후 사용자 정보를 `SecurityContext`에 등록
+- `SecurityFilterChain`에서 API별 접근 권한 설정
+- `CustomAuthenticationEntryPoint`를 통해 인증 실패 시 `401` 반환
+- `CustomAccessDeniedHandler`를 통해 권한 부족 시 `403` 반환
+
+**결과**
+
+- 로그인 후 JWT를 이용한 API 인증 정상 동작
+- `USER` 권한으로 설비 조회 요청 시 `200 OK` 확인
+- `USER` 권한으로 관리자 전용 API 요청 시 `403 Forbidden` 확인
+- `ADMIN` 권한으로 설비 등록 요청 시 `201 Created` 확인
+
+### 11.2 Docker 환경에서 JWT Secret 설정 오류
+
+**문제**
+
+Spring Boot 애플리케이션을 Docker 컨테이너로 실행하는 과정에서 JWT Secret 관련 오류가 발생하여 애플리케이션이 정상적으로 실행되지 않았습니다.
+
+**원인**
+
+- Docker 환경에서 `JWT_SECRET` 환경변수가 설정되지 않음
+- JWT 설정에서 필요한 환경변수를 참조하지 못해 `PlaceholderResolutionException` 발생
+- JWT Secret의 키 길이 조건과 관련된 `WeakKeyException` 발생
+
+**해결**
+
+- 프로젝트 루트에 `.env` 파일 생성
+- `.env`에 `JWT_SECRET` 환경변수 설정
+- JWT 서명 알고리즘에 적합한 길이의 Secret Key 사용
+- Docker Compose에서 환경변수를 Spring Boot 컨테이너로 전달하도록 설정
+- `.env`를 Git 관리 대상에서 제외하여 민감 정보 노출 방지
+
+**결과**
+
+- Docker 환경에서 JWT Secret 정상 적용
+- Spring Boot 애플리케이션 정상 실행
+- 로그인 API를 통한 JWT 발급 확인
+
+### 11.3 Docker 환경에서 PostgreSQL 연결 오류
+
+**문제**
+
+Docker 환경에서 Spring Boot 애플리케이션 실행 시 PostgreSQL 연결 설정이 정상적으로 적용되지 않아 데이터베이스 관련 오류가 발생했습니다.
+
+**원인**
+
+- Docker 환경에서 사용할 JDBC URL 설정 누락
+- 데이터베이스 연결 정보를 확인하지 못하면서 Hibernate Dialect 관련 오류 발생
+- 로컬 환경과 Docker 환경의 데이터베이스 연결 주소 차이
+
+**해결**
+
+- `application-docker.yaml`에 Docker 환경용 데이터베이스 연결 설정 추가
+- JDBC URL을 `jdbc:postgresql://db:5432/cmms`로 설정
+- Docker Compose의 서비스 이름인 `db`를 이용해 PostgreSQL 컨테이너에 연결
+- `DB_PASSWORD` 환경변수를 이용해 데이터베이스 비밀번호 관리
+- Spring Profile을 `local`, `docker`로 분리하여 실행 환경별 설정 관리
+
+**결과**
+
+- Spring Boot와 PostgreSQL 컨테이너 간 연결 정상 동작
+- Docker Compose를 이용한 애플리케이션 실행 성공
+- Docker 환경에서 회원가입, 로그인, 설비·점검·고장·정비 API 및 대시보드 조회 정상 동작 확인
+
+---
+
+## 12. 프로젝트를 통해 배운 점
+
+### 12.1 도메인 중심의 비즈니스 로직 구현
+
+설비, 점검, 고장, 정비 기능을 구현하면서 단순한 CRUD뿐만 아니라 도메인 간 관계와 업무 상태의 연계가 중요하다는 것을 배웠습니다.
+
+특히 고장 등록과 정비 진행 및 완료 과정에서 설비 상태가 함께 변경되도록 구현하면서 비즈니스 규칙을 Service 계층에서 관리하는 경험을 쌓았습니다.
+
+### 12.2 Spring Security와 JWT 인증 구조 이해
+
+Spring Security와 JWT를 이용해 Stateless 인증 방식을 구현하면서 인증과 인가의 차이를 이해했습니다.
+
+또한 사용자 역할에 따라 API 접근 권한을 구분하고, 인증 실패와 권한 부족을 각각 `401`, `403`으로 처리하는 방법을 익혔습니다.
+
+### 12.3 API 설계 및 예외 처리 경험
+
+DTO Validation과 전역 예외 처리를 적용하면서 API 요청값 검증과 일관된 오류 응답의 중요성을 배웠습니다.
+
+검색, 필터링, 페이지네이션 및 정렬 기능을 구현하면서 데이터 조회 API의 활용성을 높이는 방법을 익혔습니다.
+
+### 12.4 Docker 기반 실행 환경 구성 경험
+
+Docker와 Docker Compose를 이용해 Spring Boot 애플리케이션과 PostgreSQL을 컨테이너 환경에서 실행했습니다.
+
+이 과정에서 Spring Profile 분리, 환경변수 관리, 컨테이너 간 네트워크 연결 및 실행 오류 해결 과정을 경험했습니다.
+
+### 12.5 프로젝트를 마무리하며
+
+이번 프로젝트를 통해 Java와 Spring Boot를 활용한 REST API 설계부터 데이터베이스 연동, 인증·인가, 비즈니스 로직 구현, Docker 실행 환경 구성까지 백엔드 개발의 전반적인 흐름을 경험했습니다.
+
+특히 제조 설비 관리라는 도메인을 바탕으로 실제 업무 흐름을 고려한 상태 관리 로직을 구현하고, 개발 과정에서 발생한 오류를 분석하고 해결하는 경험을 쌓을 수 있었습니다.
+
+향후에는 이번 프로젝트에서 학습한 내용을 바탕으로 백엔드 서비스의 안정성, 성능 및 유지보수성을 고려한 개발 역량을 발전시키고자 합니다.
