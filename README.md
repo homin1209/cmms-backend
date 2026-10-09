@@ -378,8 +378,6 @@ CMMS API는 설비를 중심으로 점검, 고장, 정비 이력을 관리하도
 | GET | `/dashboard/failures` | 고장 상태 요약 |
 | GET | `/dashboard/maintenances` | 정비 상태 요약 |
 
-> 실제 Endpoint가 위 표와 다른 경우 현재 Controller의 Mapping을 기준으로 수정합니다.
-
 ## 8. 인증 및 권한
 
 Spring Security와 JWT를 이용해 Stateless 인증 방식을 구현했습니다.
@@ -622,3 +620,29 @@ Docker와 Docker Compose를 이용해 Spring Boot 애플리케이션과 PostgreS
 특히 제조 설비 관리라는 도메인을 바탕으로 실제 업무 흐름을 고려한 상태 관리 로직을 구현하고, 개발 과정에서 발생한 오류를 분석하고 해결하는 경험을 쌓을 수 있었습니다.
 
 향후에는 이번 프로젝트에서 학습한 내용을 바탕으로 백엔드 서비스의 안정성, 성능 및 유지보수성을 고려한 개발 역량을 발전시키고자 합니다.
+
+## 13. API 실행 결과
+
+### JWT 로그인
+
+JWT 기반 로그인 API의 정상 응답을 확인했습니다.
+
+![JWT 로그인](docs/images/login.png)
+
+### 설비 정상 상태
+
+정비 완료 후 설비 상태가 `RUNNING`으로 변경된 결과입니다.
+
+![설비 정상 상태](docs/images/equipment-running.png)
+
+### 고장 해결 상태
+
+정비 완료 후 고장 상태가 `RESOLVED`로 변경된 결과입니다.
+
+![고장 해결 상태](docs/images/failure-resolved.png)
+
+### 대시보드 통합 조회
+
+설비, 점검, 고장, 정비 현황을 하나의 API에서 조회한 결과입니다.
+
+![대시보드 통합 조회](docs/images/dashboard.png)
